@@ -4,8 +4,9 @@ import Loading from "./Loading";
 import {getFilmDetailFromApi, getImageFromApi} from '../API/TMDBApi';
 import moment from 'moment';
 import numeral from 'numeral';
+import {connect} from 'react-redux';
 
-export default class FilmDetail extends Component {
+class FilmDetail extends Component {
 
     constructor(props){
         super(props);
@@ -58,6 +59,7 @@ export default class FilmDetail extends Component {
     }
 
     render() {
+        console.log(this.props);
         return (
             <View style={styles.mainContainer}>
                 {this._showLoading()}
@@ -92,3 +94,7 @@ const styles = StyleSheet.create({
         marginTop: 15
     }
 });
+
+const mapStateToProps = state => ({favoritesFilm: state.favoritesFilm});
+
+export default connect(mapStateToProps)(FilmDetail);

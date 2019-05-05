@@ -1,7 +1,8 @@
-import React,{Component} from 'react';
-import {StyleSheet, View, Button, TextInput, FlatList, ActivityIndicator} from 'react-native';
+import React, {Component} from 'react';
+import {Button, FlatList, StyleSheet, TextInput, View} from 'react-native';
 import FilmItem from './FilmItem';
 import {getFilmsWithSearchedText} from '../API/TMDBApi';
+import Loading from './Loading';
 
 export default class Search extends Component {
 
@@ -19,6 +20,7 @@ export default class Search extends Component {
 
         this._loadFilms = this._loadFilms.bind(this);
         this._searchFilms = this._searchFilms.bind(this);
+        this._displayDetailForFilm = this._displayDetailForFilm.bind(this);
     }
 
     _loadFilms(){
@@ -50,15 +52,14 @@ export default class Search extends Component {
         this._loadFilms();
     }
 
+    _displayDetailForFilm(idFilm){
+        this.props.navigation.navigate('FilmDetail',{idFilm: idFilm});
+    }
+
     _showLoading(){
         if (this.state.loading) {
             return (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator
-                        size="large"
-                        color="#0000ff"
-                    />
-                </View>
+                <Loading/>
             );
         }
     }
@@ -80,7 +81,7 @@ export default class Search extends Component {
                 <FlatList
                     data={this.state.films}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({item}) => <FilmItem film={item}/>}
+                    renderItem={({item}) => <FilmItem film={item} displayDetailForFilm={this._displayDetailForFilm}/>}
                     onEndReachedThreshold={0.5}
                     onEndReached={() => {
                         if (this.page < this.totalPages)
@@ -96,7 +97,6 @@ export default class Search extends Component {
 
 const styles = StyleSheet.create({
     mainContainer: {
-        marginTop: 20,
         flex: 1
     },
     textInput: {
@@ -107,13 +107,4 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         paddingLeft: 5
     },
-    loadingContainer: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-    }
 });

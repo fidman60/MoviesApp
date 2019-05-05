@@ -1,3 +1,5 @@
+import {TOGGLE_FAVORITE} from '../../Actions/favoritesFilmActions';
+
 const initialState = {
     favoritesFilm: []
 };
@@ -5,7 +7,7 @@ const initialState = {
 export default function toggleFavorite(state = initialState, action) {
     let nextState;
     switch (action.type) {
-        case 'TOGGLE_FAVORITE':
+        case TOGGLE_FAVORITE:
             const favoriteFilmIndex = state.favoritesFilm.findIndex((item => item.id === action.value.id));
             if (favoriteFilmIndex > -1){
                 nextState = {

@@ -2,32 +2,46 @@ import React from 'react'
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import {getImageFromApi} from '../API/TMDBApi'
 
-export default function FilmItem(props) {
+export default class FilmItem extends React.Component {
 
-    const {film, displayDetailForFilm} = props;
-    return (
-        <TouchableOpacity
-            style={styles.main_container}
-            onPress={() => displayDetailForFilm(film.id)}
-        >
-            <Image
-                style={styles.image}
-                source={{uri: getImageFromApi(film.poster_path)}}
-            />
-            <View style={styles.content_container}>
-                <View style={styles.header_container}>
-                    <Text style={styles.title_text}>{film.title}</Text>
-                    <Text style={styles.vote_text}>{film.vote_average}</Text>
+    _displayImageIsFavorite(){
+        if (this.props.isFavoriteFilm) {
+            const srcImage = require('../Images/ic_favorite.png');
+            return (
+                <Image
+                    source={srcImage}
+                    style={{width: 20,height:20}}
+                />
+            );
+        }
+    }
+
+    render() {
+        const {film, displayDetailForFilm} = this.props;
+        return (
+            <TouchableOpacity
+                style={styles.main_container}
+                onPress={() => displayDetailForFilm(film.id)}
+            >
+                <Image
+                    style={styles.image}
+                    source={{uri: getImageFromApi(film.poster_path)}}
+                />
+                <View style={styles.content_container}>
+                    <View style={styles.header_container}>
+                        <Text style={styles.title_text}>{this._displayImageIsFavorite()}{film.title}</Text>
+                        <Text style={styles.vote_text}>{film.vote_average}</Text>
+                    </View>
+                    <View style={styles.description_container}>
+                        <Text style={styles.description_text} numberOfLines={6}>{film.overview}</Text>
+                    </View>
+                    <View style={styles.date_container}>
+                        <Text style={styles.date_text}>Sorti le {film.release_date}</Text>
+                    </View>
                 </View>
-                <View style={styles.description_container}>
-                    <Text style={styles.description_text} numberOfLines={6}>{film.overview}</Text>
-                </View>
-                <View style={styles.date_container}>
-                    <Text style={styles.date_text}>Sorti le {film.release_date}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
+            </TouchableOpacity>
+        );
+    }
 
 }
 

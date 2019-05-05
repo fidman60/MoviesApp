@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Loading from "./Loading";
 import {getFilmDetailFromApi, getImageFromApi} from '../API/TMDBApi';
 import moment from 'moment';
 import numeral from 'numeral';
 import {connect} from 'react-redux';
+import {toggleFavoriteAction} from '../Actions/favoritesFilmActions';
 
 class FilmDetail extends Component {
 
@@ -14,6 +15,7 @@ class FilmDetail extends Component {
             film: undefined,
             isLoading: true
         };
+        this._handleToggleFavoritesFilm = this._handleToggleFavoritesFilm.bind(this);
     }
 
     componentDidMount() {
@@ -26,6 +28,23 @@ class FilmDetail extends Component {
             });
     }
 
+    _handleToggleFavoritesFilm(){
+        this.props.dispatch(toggleFavoriteAction(this.state.film));
+    }
+
+    _displayFavoriteImage(){
+        const {favoritesFilm} = this.props;
+        const {film} = this.state;
+        const index = favoritesFilm.findIndex((item) => item.id === film.id);
+        const srcImage = index > -1 ? require("../Images/ic_favorite.png") : require("../Images/ic_favorite_border.png");
+        return (
+            <Image
+                style={styles.favoriteImage}
+                source={srcImage}
+            />
+        );
+    }
+
     _displayFilm() {
         const {film} = this.state;
         if (film !== undefined) {
@@ -36,6 +55,12 @@ class FilmDetail extends Component {
                         source={{uri: getImageFromApi(film.backdrop_path)}}
                     />
                     <Text style={styles.title}>{film.title}</Text>
+                    <TouchableOpacity
+                        onPress={this._handleToggleFavoritesFilm}
+                        style={styles.favoriteContainer}
+                    >
+                        {this._displayFavoriteImage()}
+                    </TouchableOpacity>
                     <Text style={styles.overview}>{film.overview}</Text>
                     <View style={styles.details_film}>
                         <Text>Sorti le {moment(film.release_date).format('MM/DD/YYYY')}</Text>
@@ -92,6 +117,16 @@ const styles = StyleSheet.create({
     },
     details_film: {
         marginTop: 15
+    },
+    favoriteContainer: {
+        alignItems: 'center'
+    },
+    favoriteImage: {
+        width: 40,
+        height: 40
+    },
+    overview: {
+        marginTop: 10
     }
 });
 

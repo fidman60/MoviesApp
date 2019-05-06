@@ -84,7 +84,6 @@ class FilmDetail extends Component {
     }
 
     render() {
-        console.log(this.props);
         return (
             <View style={styles.mainContainer}>
                 {this._showLoading()}

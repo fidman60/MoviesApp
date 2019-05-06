@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
-import {Button, FlatList, StyleSheet, TextInput, View} from 'react-native';
-import FilmItem from './FilmItem';
+import {Button, StyleSheet, TextInput, View} from 'react-native';
 import {getFilmsWithSearchedText} from '../API/TMDBApi';
 import Loading from './Loading';
-import {connect} from 'react-redux';
+import FilmList from './FilmList';
 
-class Search extends Component {
+export default class Search extends Component {
 
     constructor(props){
         super(props);
@@ -21,7 +20,6 @@ class Search extends Component {
 
         this._loadFilms = this._loadFilms.bind(this);
         this._searchFilms = this._searchFilms.bind(this);
-        this._displayDetailForFilm = this._displayDetailForFilm.bind(this);
     }
 
     _loadFilms(){
@@ -46,15 +44,8 @@ class Search extends Component {
         this.totalPages = 0;
         this.setState({
             films: [],
-        },() => {
-            // this code will be executed after components have been rendered because state don't update directly
-            console.log(`total films: ${this.state.films.length}`); // it will show 0
         });
         this._loadFilms();
-    }
-
-    _displayDetailForFilm(idFilm){
-        this.props.navigation.navigate('FilmDetail',{idFilm: idFilm});
     }
 
     _showLoading(){
@@ -79,21 +70,12 @@ class Search extends Component {
                     onSubmitEditing={this._searchFilms}
                 />
                 <Button title="Rechercher" onPress={this._searchFilms}/>
-                <FlatList
-                    data={this.state.films}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({item}) => {
-                        return <FilmItem
-                            film={item}
-                            displayDetailForFilm={this._displayDetailForFilm}
-                            isFavoriteFilm={~this.props.favoritesFilm.findIndex(film => item.id === film.id)}
-                        />
-                    }}
-                    onEndReachedThreshold={0.5}
-                    onEndReached={() => {
-                        if (this.page < this.totalPages)
-                            this._loadFilms();
-                    }}
+                <FilmList
+                    films={this.state.films}
+                    navigation={this.props.navigation}
+                    loadFilms={this._loadFilms}
+                    page={this.page}
+                    totalPages={this.totalPages}
                 />
                 {this._showLoading()}
             </View>
@@ -115,7 +97,3 @@ const styles = StyleSheet.create({
         paddingLeft: 5
     },
 });
-
-const mapStateToProps = state => ({favoritesFilm: state.favoritesFilm});
-
-export default connect(mapStateToProps)(Search);
